@@ -94,6 +94,21 @@ func (c *Client) FindAddressBookHomeSet(principal string) (string, error) {
 	return prop.Href.Path, nil
 }
 
+func (c *Client) FindAddressBookHomeSetEx(ctx context.Context, principal string) (string, string, error) {
+	propfind := internal.NewPropNamePropFind(addressBookHomeSetName)
+	resp, err := c.ic.PropFindFlat(ctx, principal, propfind)
+	if err != nil {
+		return "", "", err
+	}
+
+	var prop addressbookHomeSet
+	if err := resp.DecodeProp(&prop); err != nil {
+		return "", "", err
+	}
+
+	return prop.Href.Host, prop.Href.Path, err
+}
+
 func decodeSupportedAddressData(supported *supportedAddressData) []AddressDataType {
 	l := make([]AddressDataType, len(supported.Types))
 	for i, t := range supported.Types {
